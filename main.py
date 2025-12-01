@@ -1,12 +1,11 @@
 import os
 from fastapi import FastAPI, File, UploadFile
-from pyannote.audio import Pipeline
-import torch
+from pyannote.audio.pipelines import SpeakerDiarization
 
 HF_TOKEN = os.getenv("PYANNOTE_AUTH_TOKEN")
 
-pipeline = Pipeline.from_pretrained(
-    "pyannote/speaker-diarization-3.1",
+pipeline = SpeakerDiarization.from_pretrained(
+    "pyannote/speaker-diarization@3.1",
     use_auth_token=HF_TOKEN
 )
 
@@ -19,16 +18,16 @@ async def diarize(audio: UploadFile = File(...)):
 
     diarization = pipeline("tmp.wav")
 
-    result = []
-    for turn, _, speaker in diarization.itertracks(yield_label=True):
-        result.append({
+    segments = []
+    for turn, spk in diarization.itertracks(yield_label=True):
+        segments.append({
+            "speaker": spk,
             "start": round(turn.start, 2),
-            "end": round(turn.end, 2),
-            "speaker": speaker
+            "end": round(turn.end, 2)
         })
 
-    return {"status": "ok", "segments": result}
+    return {"status": "ok", "segments": segments}
 
 @app.get("/")
 def home():
-    return {"service": "Starblicks Diarizer Running ✔"}
+    return {"service": "STARBLICKS DIARIZER LIVE OK"}
