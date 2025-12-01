@@ -1,6 +1,10 @@
-pyannote.audio==3.1.1
-torch
-openai
-ffmpeg-python
+torch==2.1.0
+torchaudio==2.1.0
+numpy
 fastapi
 uvicorn
+python-multipart
+openai
+pyannote.audio==3.1.1
+huggingface_hub
+soundfile
