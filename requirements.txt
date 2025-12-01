@@ -1,10 +1,10 @@
 torch==2.1.0
 torchaudio==2.1.0
+soundfile
 numpy
 fastapi
 uvicorn
 python-multipart
 openai
+huggingface_hub==0.23.2
 pyannote.audio==3.1.1
-huggingface_hub
-soundfile
