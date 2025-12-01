@@ -1,11 +1,11 @@
 import os
 from fastapi import FastAPI, File, UploadFile
-from pyannote.audio.pipelines import SpeakerDiarization
+from pyannote.audio import Pipeline
 
 HF_TOKEN = os.getenv("PYANNOTE_AUTH_TOKEN")
 
-pipeline = SpeakerDiarization.from_pretrained(
-    "pyannote/speaker-diarization@3.1",
+pipeline = Pipeline.from_pretrained(
+    "pyannote/speaker-diarization",
     use_auth_token=HF_TOKEN
 )
 
@@ -18,16 +18,16 @@ async def diarize(audio: UploadFile = File(...)):
 
     diarization = pipeline("tmp.wav")
 
-    segments = []
-    for turn, spk in diarization.itertracks(yield_label=True):
-        segments.append({
-            "speaker": spk,
-            "start": round(turn.start, 2),
-            "end": round(turn.end, 2)
+    results = []
+    for turn, speaker in diarization.itertracks(yield_label=True):
+        results.append({
+            "speaker": speaker,
+            "start": turn.start,
+            "end": turn.end
         })
 
-    return {"status": "ok", "segments": segments}
+    return {"status": "ok", "segments": results}
 
 @app.get("/")
 def home():
-    return {"service": "STARBLICKS DIARIZER LIVE OK"}
+    return {"service": "STARBLICKS DIARIZER LIVE"}
